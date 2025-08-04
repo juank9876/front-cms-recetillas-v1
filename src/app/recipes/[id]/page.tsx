@@ -105,12 +105,13 @@ const mockRecipe = {
 }
 
 interface RecipePageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
-export default function RecipePage({ params }: RecipePageProps) {
+export default async function RecipePage({ params }: RecipePageProps) {
+  const { id } = await params;
   const [isFavorite, setIsFavorite] = useState(false)
   const [activeStep, setActiveStep] = useState(0)
   const [checkedIngredients, setCheckedIngredients] = useState<number[]>([])
