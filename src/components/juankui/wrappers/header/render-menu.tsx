@@ -30,7 +30,7 @@ function ListItem({ title, href, className, isChild = false, childCategories, pa
       onMouseLeave={() => setOpen(false)}
     >
       <NavLink
-        href={parentSlug ? `${parentSlug}${href}` : '/categories/' + href}
+        href={parentSlug ? `${parentSlug}${href}` : href}
         className={`flex items-center px-4 py-2 text-base font-normal uppercase tracking-wide text-slate-900 hover:underline hover:underline-offset-8 transition-colors duration-150 ${isChild ? 'pl-8 text-sm' : ''}`}
       >
         {title}
@@ -62,7 +62,7 @@ export function RenderMenu({ normalizedItems, categoriesItems }: { normalizedIte
   if (!normalizedItems || normalizedItems.length === 0) {
     return null;
   }
-  
+
   return (
     <nav>
       <ul className="flex flex-row gap-2 items-center justify-center w-full bg-white border-0 shadow-none py-0 mx-auto">
@@ -83,7 +83,7 @@ export function RenderMenu({ normalizedItems, categoriesItems }: { normalizedIte
                         title={capitalize(category.title)}
                         href={category.url}
                         childCategories={category.children}
-                        parentSlug={'/categories'} />
+                        parentSlug={''} />
                     ))}
                   </ul>
                 </div>
