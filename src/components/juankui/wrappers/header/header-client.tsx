@@ -4,18 +4,70 @@ import { RenderMenu } from './render-menu'
 import { NavMobile } from './nav-mobile'
 import { NavigationMenu } from '@/components/ui/navigation-menu'
 import { Search, User, Heart, Menu } from 'lucide-react'
-import Link from 'next/link'
 import { BreakingNews } from './breaking-news'
 import { Category, SiteSettings, NavItemType } from '@/types/types'
 import { useState } from 'react'
+import { NavLink } from './nav-link';
+import { navPosition } from '@/config/options'
+import { capitalize } from '@/utils/capitalize'
+import { ChevronUp } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
+import { Link } from '@/components/juankui/optionals/link';
+import { Slug } from '@/api-fetcher/fetcher';
 
 interface HeaderClientProps {
     categoriesItems: Category[];
     settings: SiteSettings | null;
     normalizedItems: NavItemType[];
+    allSlugs: Slug[]
 }
+type ListItemProps = {
+    title: string;
+    href: string;
+    children?: React.ReactNode;
+    className?: string
+    isChild?: boolean
+    childCategories?: NavItemType[]
+    parentSlug?: string
+}
+function ListItem({ title, href, className, isChild = false, childCategories, parentSlug }: ListItemProps) {
+    const hasSubcategories = childCategories && childCategories.length > 0;
+    const [open, setOpen] = useState(false);
+    const parentSlugFull = parentSlug + href;
 
-export function HeaderClient({ categoriesItems, settings, normalizedItems }: HeaderClientProps) {
+    return (
+        <li
+            className={hasSubcategories ? 'relative' : ''}
+            onMouseEnter={() => setOpen(true)}
+            onMouseLeave={() => setOpen(false)}
+        >
+            <NavLink
+                href={parentSlug ? `${parentSlug}${href}` : href}
+                className={`flex items-center px-4 py-3 text-md text-black hover:bg-orange-500 bg-white hover:text-white rounded-lg  transition-colors duration-150 ${isChild ? 'pl-8 text-sm' : ''}`}
+            >
+                {title}
+                {hasSubcategories && (
+                    <ChevronUp color='black' className={`text-black ml-2 h-4 w-4 transition-transform duration-200 ${open ? 'rotate-90' : ''}`} />
+                )}
+            </NavLink>
+            {/* Renderizar subcategorías si existen */}
+            {hasSubcategories && (
+                <ul className={`absolute right-full top-0 mt-0 ml-0 w-[220px] bg-white rounded-lg shadow-lg z-30 ${open ? 'block' : 'hidden'}`}>
+                    {childCategories!.map((subcat) => (
+                        <ListItem
+                            key={subcat.id}
+                            title={capitalize(subcat.title)}
+                            href={subcat.url}
+                            childCategories={subcat.children}
+                            parentSlug={parentSlugFull || undefined}
+                        />
+                    ))}
+                </ul>
+            )}
+        </li>
+    )
+}
+export function HeaderClient({ categoriesItems, settings, normalizedItems, allSlugs }: HeaderClientProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [showMobileMenu, setShowMobileMenu] = useState(false);
 
@@ -162,15 +214,49 @@ export function HeaderClient({ categoriesItems, settings, normalizedItems }: Hea
                 <div className="bg-white border-t border-gray-100">
                     <div className="max-w-7xl mx-auto px-4">
                         <nav className="hidden lg:flex items-center space-x-8 h-12">
-                            {mainNavItems.map((item) => (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    className="text-sm font-semibold text-gray-700 hover:text-orange-600 transition-colors uppercase tracking-wide"
-                                >
-                                    {item.label}
-                                </Link>
-                            ))}
+                            <ul className="flex flex-row gap-2 items-center justify-start w-full  border-0 shadow-none py-0">
+                                {normalizedItems.map((item) => (
+                                    <li key={item.id} className="relative group/menu">
+                                        {item.children && item.children.length > 0 ? (
+                                            <>
+                                                <span className="flex text-base hover:bg-orange-500 hover:text-white  items-center gap-1 px-4 py-3 cursor-pointer tracking-wide  transition-colors duration-150 rounded-lg">
+                                                    {capitalize(item.title)}
+                                                    <ChevronDown className="ml-1 h-4 w-4 transition-transform duration-200 group-hover/menu:rotate-180" />
+                                                </span>
+                                                <div className="bg-white absolute left-0 top-full w-[250px]  rounded-lg z-20 hidden group-hover/menu:block ">
+                                                    <ul className="py-0 ">
+                                                        {item.children.map((category) => {
+
+                                                            const foundCategory = Object.entries(allSlugs).find(([slug, data]) => {
+                                                                return '/' + slug === category.url;
+                                                            });
+                                                            // Construir href
+                                                            const isCategory = foundCategory ? `/categories` : "";
+
+                                                            return (
+                                                                <ListItem
+                                                                    key={category.id}
+                                                                    title={capitalize(category.title)}
+                                                                    href={category.url}
+                                                                    childCategories={category.children}
+                                                                    parentSlug={isCategory} />
+                                                            )
+                                                        })}
+                                                    </ul>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <NavLink
+                                                href={item.url}
+                                                className="px-4 py-3 text-base  tracking-wide  hover:text-white hover:bg-orange-500 rounded-lg"
+                                            //label={item.title}
+                                            >
+                                                {item.title}
+                                            </NavLink>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
                         </nav>
                     </div>
                 </div>
