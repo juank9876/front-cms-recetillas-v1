@@ -1,11 +1,13 @@
+import { debug, debugLog } from "@/config/debug-log";
 import { Author, Category, NavItemType, Page, PermalinkData, Post, PostResponse, SiteSettings } from "@/types/types";
 
-type MethodType = "articles" | "article" | "pages" | "page" | "category" | "categories" | "menu" | "site-settings" | "authors" | "author" | "permalink" | "category-posts";
+type MethodType = "category-posts" | "articles" | "article" | "pages" | "page" | "category" | "categories" | "menu" | "site-settings" | "authors" | "author" | "permalink" | "all-slugs" | "slug-to-id";
 
 interface FetcherParams {
   method: MethodType;
   id?: string
   type?: string
+  slug?: string
   category_id?: string
 }
 
@@ -15,21 +17,19 @@ export interface ResponseInterface<T = unknown> {
   data: T // Puedes ajustar el tipo según lo que esperes
 }
 
-export async function fetcher<T>({ method, id, type, category_id }: FetcherParams): Promise<T> {
+export async function fetcher<T>({ method, id, type, slug, category_id }: FetcherParams): Promise<T> {
   const baseUrl = `https://intercms.dev/api/v2/data.php`
-  const url = baseUrl + `?method=${method}` + `&api_key=${process.env.API_KEY}` + `&project_id=${process.env.PROJECT_ID}` + (id ? `&id=${id}` : ``) + (type ? `&type=${type}` : ``) + (category_id ? `&category_id=${category_id}` : ``)
-  /*
-    if (method === "category-posts") {
-      console.log(url)
-    }
+  const url = baseUrl +
+    `?method=${method}` +
+    `&api_key=${process.env.API_KEY}` +
+    `&project_id=${process.env.PROJECT_ID}` +
+    (id ? `&id=${id}` : ``) +
+    (type ? `&type=${type}` : ``) +
+    (slug ? `&slug=${slug}` : ``) +
+    (category_id ? `&category_id=${category_id}` : ``)
 
-  if (method === "page" && id == undefined) {
-    console.log("ID is required for method 'page'");
-  }
-  if (method === "article" && id == undefined) {
-    console.log("ID is required for method 'article'");
-  }
-  */
+  debugLog(debug.fetcher, `[+] fetcher url: ` + method.toUpperCase() + " " + url)
+
   try {
     const res = await fetch(url, {
       next: { revalidate: 3 },
@@ -93,4 +93,34 @@ interface CategoryPosts {
 }
 export async function fetchCategoryPosts(id: string): Promise<CategoryPosts> {
   return fetcher<CategoryPosts>({ method: "category-posts", category_id: id });
+}
+
+export interface Slug {
+  slug: {
+    id: string,
+    title: string,
+    type: string
+  }
+}
+export async function fetchAllSlugs(type: "page" | "post" | "category"): Promise<Slug[]> {
+  const slugs = await fetcher<Slug[]>({ method: "all-slugs", type });
+  debugLog(debug.fetchAllSlugs, "fetchAllSlugs", slugs)
+  return slugs
+}
+
+interface SlugToId {
+  id: string,
+  title: string,
+  type: string
+  slug: string
+}
+export async function fetchSlugToId(slug: string, type: "page" | "post" | "category"): Promise<string | null> {
+  const slugRes = await fetcher<SlugToId>({ method: "slug-to-id", slug, type });
+  //console.log(slugRes)
+  if (!slugRes) {
+    return null
+  }
+  debugLog(debug.fetchSlugToId, "fetchSlugToId", slugRes)
+
+  return slugRes.id
 }

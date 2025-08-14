@@ -1,39 +1,43 @@
-// app/[slug]/page.tsx
-import { notFound } from 'next/navigation'
-import { capitalize } from '@/utils/capitalize'
 import HtmlRenderer from '@/components/html-transform/html-renderer'
 import { PrePage } from '@/components/juankui/pre-rendered/pre-page'
-import { fetchPageById } from '@/api-fetcher/fetcher'
-import { createPageTitle, getPageSlugToIdMap, getPostSlugToIdMap } from '@/lib/utils'
-import { fetchArticleById } from '@/api-fetcher/fetcher'
-import { debug, debugLog } from '@/config/debug-log'
-import { PrePost } from '@/components/juankui/pre-rendered/pre-post'
+import { fetchArticleById, fetchPageById, fetchSlugToId } from '@/api-fetcher/fetcher'
 import NotFound from '@/app/not-found'
 import { createMetadata } from '@/app/seo/createMetadata'
+import { PrePost } from '@/components/juankui/pre-rendered/pre-post'
+/*
+async function getHomePageFromParams() {
 
+  const map = await getPageSlugToIdMap();
+  const slug = "home";
+  const id = map[slug];
+
+
+  const homePage = await fetchPageById(id)
+  return homePage
+}
+*/
 async function getPageFromParams({
   params,
 }: {
   params: Promise<{ slug: string }>
 }) {
-  const map = await getPageSlugToIdMap()
+
   const { slug } = await params
-  const id = map[slug]
+  const id = await fetchSlugToId(slug, "page")
 
-
-  const page = await fetchPageById(id)
+  const page = await fetchPageById(id || "")
   return page
 }
+
 async function getPostFromParams({
   params,
 }: {
   params: Promise<{ slug: string }>
 }) {
-  const map = await getPostSlugToIdMap()
   const { slug } = await params
-  const id = map[slug]
+  const id = await fetchSlugToId(slug, "post")
 
-  const post = await fetchArticleById(id)
+  const post = await fetchArticleById(id || "")
   return post
 }
 

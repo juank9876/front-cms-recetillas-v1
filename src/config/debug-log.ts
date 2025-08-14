@@ -16,9 +16,13 @@ export const debug = {
     pages: false,
     htmlContent: false,
     cssContent: false,
-    postOrCategoryPermalink: false,
-    currentPostOrCategoryUrl: false,
+    postOrCategoryPermalink: true,
+    currentPostOrCategoryUrl: true,
     createMetadata: false,
+
+
+    fetchAllSlugs: false,
+    fetchSlugToId: false,
 }
 
 

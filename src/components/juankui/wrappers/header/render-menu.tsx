@@ -6,6 +6,7 @@ import { Category, NavItemType } from '@/types/types';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { Link } from '@/components/juankui/optionals/link';
 import { NavLink } from './nav-link';
+import { Slug } from '@/api-fetcher/fetcher';
 
 
 type ListItemProps = {
@@ -57,7 +58,7 @@ function ListItem({ title, href, className, isChild = false, childCategories, pa
 }
 
 // ... existing code ...
-export function RenderMenu({ normalizedItems, categoriesItems }: { normalizedItems?: NavItemType[], categoriesItems?: Category[] }) {
+export function RenderMenu({ normalizedItems, allSlugs }: { normalizedItems: NavItemType[], categoriesItems: Category[], allSlugs: Slug[] }) {
   // Return null if no items to render
   if (!normalizedItems || normalizedItems.length === 0) {
     return null;
@@ -76,15 +77,23 @@ export function RenderMenu({ normalizedItems, categoriesItems }: { normalizedIte
                 </span>
                 <div className="absolute left-0 top-full min-w-[180px] bg-white border border-slate-200 z-20 hidden group-hover/menu:block py-5">
                   <ul className="py-0">
-                    <h4 className="text-base font-semibold uppercase text-[var(--color-accent-dark)] px-4">Categories</h4>
-                    {item.children.map((category) => (
-                      <ListItem
-                        key={category.id}
-                        title={capitalize(category.title)}
-                        href={category.url}
-                        childCategories={category.children}
-                        parentSlug={''} />
-                    ))}
+                    {item.children.map((category) => {
+
+                      const foundCategory = Object.entries(allSlugs).find(([slug, data]) => {
+                        return '/' + slug === category.url;
+                      });
+                      // Construir href
+                      const isCategory = foundCategory ? `/categories` : "";
+
+                      return (
+                        <ListItem
+                          key={category.id}
+                          title={capitalize(category.title)}
+                          href={category.url}
+                          childCategories={category.children}
+                          parentSlug={isCategory} />
+                      )
+                    })}
                   </ul>
                 </div>
               </>
