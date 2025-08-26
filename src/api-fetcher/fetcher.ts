@@ -97,7 +97,7 @@ export async function fetchCategoryPosts(id: string): Promise<CategoryPosts> {
   return fetcher<CategoryPosts>({ method: "category-posts", category_id: id });
 }
 
-interface Slug {
+export interface Slug {
   slug: {
     id: string,
     title: string,
