@@ -14,11 +14,19 @@ import {
   transformCardBody,
   transformCode,
   transformStrong,
-  transformP,
   transformForm,
+  transformP,
   transformPre,
-  transformTextarea,
+  transformTestimonials,
+  transformBlockquote,
   transformInput,
+  transformBtnSubmit,
+  transformTextarea,
+  transformAccordion,
+  transformAccordionItem,
+  transformAccordionHeader,
+  transformAccordionContent,
+  transformSvg
 } from './transformers'
 import type { JSX } from 'react'
 
@@ -38,14 +46,23 @@ const rules: TransformerRule[] = [
     matcher: (el) => /col-(xs|sm|md|lg|xl)-\d+/.test(el.attribs?.class || ''),
     transformer: transformCol
   },
-  { className: 'text-element', transformer: transformTextElement },
-  { className: 'btn', transformer: transformButton },
-  { className: 'card-img-top', transformer: transformImg },
-  { className: 'container', transformer: transformContainer },
   {
     matcher: (el) => 'data-apikey' in el.attribs || 'apikey' in el.attribs,
     transformer: transformBrandlisty,
   },
+  { className: 'text-element', transformer: transformTextElement },
+  { className: 'btn', transformer: transformButton },
+  { className: 'card-img-top', transformer: transformImg },
+  { className: 'container', transformer: transformContainer },
+  { className: 'testimonials', transformer: transformTestimonials },
+
+  { className: 'btn-submit', transformer: transformBtnSubmit },
+
+  { className: 'accordion', transformer: transformAccordion },
+  { className: 'accordion-item', transformer: transformAccordionItem },
+  { className: 'accordion-header', transformer: transformAccordionHeader },
+  { className: 'accordion-body', transformer: transformAccordionContent },
+
   //Tags HTML
   { tagName: 'form', transformer: transformForm },
   { tagName: 'h2', transformer: transformH2 },
@@ -56,8 +73,11 @@ const rules: TransformerRule[] = [
   { tagName: 'code', transformer: transformCode },
   { tagName: 'pre', transformer: transformPre },
   { tagName: 'strong', transformer: transformStrong },
+  { tagName: 'blockquote', transformer: transformBlockquote },
   { tagName: 'input', transformer: transformInput },
   { tagName: 'textarea', transformer: transformTextarea },
+  { tagName: 'button', transformer: transformButton },
+  { tagName: 'svg', transformer: transformSvg },
 ]
 
 export function getTransformer(el: Element, options: HTMLReactParserOptions) {

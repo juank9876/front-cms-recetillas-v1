@@ -1,7 +1,9 @@
 import { debug, debugLog } from "@/config/debug-log";
 import { Author, Category, NavItemType, Page, PermalinkData, Post, PostResponse, SiteSettings } from "@/types/types";
 
-type MethodType = "category-posts" | "articles" | "article" | "pages" | "page" | "category" | "categories" | "menu" | "site-settings" | "authors" | "author" | "permalink" | "all-slugs" | "slug-to-id";
+type MethodType =
+  "category-posts" | "articles" | "article" | "pages" | "page" | "category" | "categories" | "menu" | "site-settings" | "authors" |
+  "author" | "permalink" | "all-slugs" | "slug-to-id" | "homepage" | "tags";
 
 interface FetcherParams {
   method: MethodType;
@@ -33,11 +35,11 @@ export async function fetcher<T>({ method, id, type, slug, category_id }: Fetche
   try {
     const res = await fetch(url, {
       next: { revalidate: 3 },
+      //cache: 'no-store'
     })
     const data: ResponseInterface<T> = await res.json();
 
     if (data.status === "success") {
-      //console.log(data)
       return data.data
     }
 
@@ -95,7 +97,7 @@ export async function fetchCategoryPosts(id: string): Promise<CategoryPosts> {
   return fetcher<CategoryPosts>({ method: "category-posts", category_id: id });
 }
 
-export interface Slug {
+interface Slug {
   slug: {
     id: string,
     title: string,
@@ -116,11 +118,31 @@ interface SlugToId {
 }
 export async function fetchSlugToId(slug: string, type: "page" | "post" | "category"): Promise<string | null> {
   const slugRes = await fetcher<SlugToId>({ method: "slug-to-id", slug, type });
-  //console.log(slugRes)
   if (!slugRes) {
     return null
   }
   debugLog(debug.fetchSlugToId, "fetchSlugToId", slugRes)
 
   return slugRes.id
+}
+
+export async function fetchHomePage() {
+  return fetcher<Page>({ method: "homepage" });
+}
+
+export interface Tag {
+  id: string
+  project_id: string
+  name: string
+  slug: string
+  description: string
+  meta_title: string | undefined
+  meta_description: string | undefined
+  schema_data: unknown | undefined
+  created_at: string
+  updated_at: string
+  post_count: string
+}
+export async function fetchTags() {
+  return fetcher<Tag[]>({ method: "tags" });
 }
