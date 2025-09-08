@@ -1,11 +1,12 @@
 import "./globals.css";
-import { generateFonts } from '../utils/fonts'
-import { Footer } from "@/components/juankui/wrappers/footer";
+import { Header } from "@/components/juankui/wrappers/nav/header";
+import { Footer } from "@/components/juankui/wrappers/footer/footer";
 import { fetchSiteSettings } from "@/api-fetcher/fetcher";
 import { ViewTransitions } from 'next-view-transitions'
 import { hexToOklch } from "@/utils/hex-to-oklch";
 import { Providers } from "./providers";
-import { Header } from "@/components/juankui/wrappers/header/header";
+import Head from "next/head";
+import { generateFonts } from "@/utils/fonts";
 import { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -51,19 +52,20 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const font = await generateFonts();
   const settings = await fetchSiteSettings()
+  //cambiar el valor para distinta tonalidad
+  const primaryLightColor = hexToOklch(settings.primary_color, 0.90)
+  const primarySemiLightColor = hexToOklch(settings.primary_color, 0.50)
+  const primarySemiDarkColor = hexToOklch(settings.primary_color, 0.5, 'darker')
+  const primaryDarkColor = hexToOklch(settings.primary_color, 0.6, 'darker')
 
-  const primaryLightColor = "#ffffff"
   const secondaryLightColor = hexToOklch(settings.secondary_color, 0.80);
-  const accentLightColor = hexToOklch(settings.accent_color, 0.80);
-
-  const primarySemiDarkColor = hexToOklch(settings.primary_color, 0.3, 'darker')
-  const primaryDarkColor = hexToOklch(settings.primary_color, 0.4, 'darker')
-
   const secondaryDarkColor = hexToOklch(settings.secondary_color, 0.2, 'darker');
+
+  const accentLightColor = hexToOklch(settings.accent_color, 0.80);
+  const accentSemiLightColor = hexToOklch(settings.accent_color, 0.60);
   const accentDarkColor = hexToOklch(settings.accent_color, 0.2, 'darker');
 
   return (
@@ -81,31 +83,33 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           <meta name="description" content={settings.meta_description} />
           {/* puedes usar settings.favicon, site_logo, etc */}
           <link rel="icon" href={settings.favicon || "/vercel.svg"} />
-        </head>        <body
+        </head>
+        <body
           style={{
-            '--color-primary': settings.primary_color,
-            '--color-secondary': settings.secondary_color,
-            '--color-accent': settings.accent_color,
-
             '--color-primary-light': primaryLightColor,
-            '--color-secondary-light': secondaryLightColor,
-            '--color-accent-light': accentLightColor,
-
+            '--color-primary-semi-light': primarySemiLightColor,
+            '--color-primary': settings.primary_color,
             '--color-primary-semi-dark': primarySemiDarkColor,
             '--color-primary-dark': primaryDarkColor,
-            '--color-secondary-dark': secondaryDarkColor,
+
+            '--color-accent-light': accentLightColor,
+            '--color-accent-semi-light': accentSemiLightColor,
+            '--color-accent': settings.accent_color,
             '--color-accent-dark': accentDarkColor,
 
+            '--color-secondary-light': secondaryLightColor,
+            '--color-secondary': settings.secondary_color,
+            '--color-secondary-dark': secondaryDarkColor,
           } as React.CSSProperties
           }
-          className={`max-w-screen bg-white antialiased`}
+          className={`bg-gradient-light max-w-screen antialiased`}
           suppressHydrationWarning
         >
           <Providers>
             <div className="flex min-h-[100dvh] flex-col">
               <Header />
               {children}
-              <Footer settings={settings} />
+              <Footer />
             </div>
           </Providers>
         </body>

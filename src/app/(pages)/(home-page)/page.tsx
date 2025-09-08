@@ -6,7 +6,7 @@ import { Metadata } from 'next'
 
 export async function generateMetadata(): Promise<Metadata> {
   const homePage = await fetchHomePage()
-  return await createMetadata(homePage);
+  return await createMetadata(homePage, false);
 }
 
 
@@ -14,21 +14,22 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Home() {
   const homePage = await fetchHomePage()
   const settings = await fetchSiteSettings()
-  console.log("homePage", homePage)
 
 
 
   if (homePage) return (
     <PreHomePage
       settings={settings}
+      pageProps={homePage}
     >
-      <HtmlRenderer cssContent={homePage.css_content} html={homePage.html_content} />
+      <HtmlRenderer cssContent={homePage.css_content || undefined} html={homePage.html_content} />
     </PreHomePage>
 
   )
   return (
     <PreHomePage
       settings={settings}
+      pageProps={homePage}
     >
       <div className="text-2xl font-bold">No home page found</div>
     </PreHomePage>
