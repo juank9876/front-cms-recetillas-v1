@@ -1,4 +1,4 @@
-import { HeroPage } from '@/components/juankui/hero/hero-page'
+import { HeroPage } from '@/components/juankui/hero/hero'
 import { MainWrapper } from '@/components/juankui/wrappers/main-wrapper'
 import { ReactNode } from 'react'
 import { Section } from '../wrappers/section'

@@ -1,10 +1,8 @@
 import { MainWrapper } from '@/components/juankui/wrappers/main-wrapper'
 import { ReactNode } from 'react'
-import { HeroCategory } from '../hero/hero-category'
-import { Section } from '../wrappers/section'
+import { HeroCategory } from '@/components/juankui/hero/hero'
 //import { capitalize } from '@/utils/capitalize'
 import { Category } from '@/types/types'
-import { cn } from '@/lib/utils'
 import { ParticlesFull } from '../hero/particles'
 import { isParticles } from '@/config/options'
 
@@ -13,11 +11,10 @@ export function PreCategory({ children, category, className }: { children: React
     <MainWrapper>
       {isParticles && <ParticlesFull />}
       <HeroCategory {...category} />
-      <Section>
-        <div className={cn('flex flex-wrap', className)}>
-          {children}
-        </div>
-      </Section>
+      <article className={`${className}`}>
+        {children}
+
+      </article>
     </MainWrapper>
   )
 }

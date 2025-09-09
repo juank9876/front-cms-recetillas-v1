@@ -1,4 +1,4 @@
-import { HeroPost } from '@/components/juankui/hero/hero-post'
+import { HeroPost } from '@/components/juankui/hero/hero'
 import { MainWrapper } from '@/components/juankui/wrappers/main-wrapper'
 import { Post } from '@/types/types'
 import { ReactNode } from 'react'
@@ -6,7 +6,6 @@ import { ParticlesFull } from '../hero/particles'
 import { isParticles } from '@/config/options'
 import { Section } from '../wrappers/section'
 import Image from 'next/image';
-import NextLink from 'next/link';
 import { fetchAuthorById } from '@/api-fetcher/fetcher'
 
 async function AuthorCard({ name, avatar, bio, author_id }: { name: string, avatar?: string, bio?: string, author_id: string }) {
@@ -58,7 +57,7 @@ async function AuthorCard({ name, avatar, bio, author_id }: { name: string, avat
 
   // Si no hay enlaces válidos, no renderices la fila de iconos
   return (
-    <div className="border-t border-b py-4 px-2 flex items-center gap-4 my-6 bg-white">
+    <div className="border-t border-b py-6 px-10 flex items-center gap-4 my-6 rounded-lg hover:to-[var(--color-primary-semi-dark)] transition-colors bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-primary-dark)]">
       <div className="flex-shrink-0">
         <Image
           src={avatar || 'https://api.dicebear.com/7.x/lorelei/svg?seed=default'}
@@ -68,16 +67,16 @@ async function AuthorCard({ name, avatar, bio, author_id }: { name: string, avat
           className="rounded-full border object-cover"
         />
       </div>
-      <div className="flex-1">
-        <h3 className="font-bold text-xl text-slate-900 pl-1">{name}</h3>
-        {bio && <div className="text-slate-700 text-sm pl-1">{bio}</div>}
+      <div className="flex-1 space-y-2">
+        <h3 className="font-bold text-xl text-white pl-1">{name}</h3>
+        {bio && <div className="text-slate-200 text-sm pl-1">{bio}</div>}
         {validLinks.length > 0 && (
           <div className="flex space-x-4 justify-start items-center mt-2">
             {validLinks.map(social => (
               <a
                 key={social.label}
                 href={social.href}
-                className="text-slate-800 hover:text-slate-600 transition-colors"
+                className="text-slate-200 hover:text-white transition-colors"
                 aria-label={social.label}
                 target="_blank"
                 rel="noopener noreferrer"

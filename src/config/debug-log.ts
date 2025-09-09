@@ -27,9 +27,8 @@ export const debug = {
     fetchSlugToId: false,
     apiFooter: false,
 
-    cookiesConsent: true,          //log cookies consent component info
+    cookiesConsent: false,          //log cookies consent component info
 }
-
 
 export const settings = {       //manejar opciones de config del proyecto. No afecta al codigo, solo logs
     styles: {
